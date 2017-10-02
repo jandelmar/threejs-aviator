@@ -1,0 +1,24 @@
+{
+  "name": "aviator",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./dist/index.html",
+  "scripts": {
+    "build": "webpack",
+    "dev": "webpack-dev-server"
+  },
+  "keywords": ["threejs", "webpack", "es6", "babel", "modules", "bundle"],
+  "author": "Jan Delmar",
+  "license": "MIT",
+  "dependencies": {
+    "three": "^0.87.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-minify-webpack-plugin": "^0.2.0",
+    "babel-preset-env": "^1.6.0",
+    "webpack": "^3.6.0",
+    "webpack-dev-server": "^2.9.1"
+  }
+}
