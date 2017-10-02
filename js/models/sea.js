@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Colors } from './../../colors';
-import { scene } from './../scene/scene';
+import { Colors } from '../colors';
+import { scene } from '../scene/scene';
 
 // First let's define a Sea object :
 const Sea = function () {

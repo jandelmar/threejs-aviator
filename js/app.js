@@ -1,8 +1,8 @@
-import { createScene, scene, camera, renderer } from './modules/scene/scene';
-import { createLights } from './modules/scene/lights';
-import { createAirplane, airplane } from './modules/models/airplane';
-import { createSea, sea } from './modules/models/sea';
-import { createSky, sky } from './modules/models/sky';
+import { createScene, scene, camera, renderer } from './scene/scene';
+import { createLights } from './scene/lights';
+import { createAirplane, airplane } from './models/airplane';
+import { createSea, sea } from './models/sea';
+import { createSky, sky } from './models/sky';
 
 window.addEventListener('load', init, false);
 

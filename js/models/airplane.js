@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Colors } from './../../colors';
-import { scene } from './../scene/scene';
+import { Colors } from '../colors';
+import { scene } from '../scene/scene';
 
 const AirPlane = function () {
 	

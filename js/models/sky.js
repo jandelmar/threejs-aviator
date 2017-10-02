@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { Colors } from './../../colors';
-import { scene } from './../scene/scene';
+import { Colors } from '../colors';
+import { scene } from '../scene/scene';
 
 const Cloud = function () {
 	// Create an empty container that will hold the different parts of the cloud
