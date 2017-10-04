@@ -9,7 +9,7 @@ webpackJsonp([0],[
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.renderer = exports.camera = exports.scene = exports.createScene = undefined;
+exports.HEIGHT = exports.WIDTH = exports.renderer = exports.camera = exports.scene = exports.createScene = undefined;
 
 var _three = __webpack_require__(0);
 
@@ -27,8 +27,8 @@ function createScene() {
     // Get the width and the height of the screen,
     // use them to set up the aspect ratio of the camera 
     // and the size of the renderer.
-    HEIGHT = window.innerHeight;
-    WIDTH = window.innerWidth;
+    exports.HEIGHT = HEIGHT = window.innerHeight;
+    exports.WIDTH = WIDTH = window.innerWidth;
 
     // Create the scene
     exports.scene = scene = new THREE.Scene();
@@ -79,8 +79,8 @@ function createScene() {
 
 function handleWindowResize() {
     // update height and width of the renderer and the camera
-    HEIGHT = window.innerHeight;
-    WIDTH = window.innerWidth;
+    exports.HEIGHT = HEIGHT = window.innerHeight;
+    exports.WIDTH = WIDTH = window.innerWidth;
     renderer.setSize(WIDTH, HEIGHT);
     camera.aspect = WIDTH / HEIGHT;
     camera.updateProjectionMatrix();
@@ -90,6 +90,8 @@ exports.createScene = createScene;
 exports.scene = scene;
 exports.camera = camera;
 exports.renderer = renderer;
+exports.WIDTH = WIDTH;
+exports.HEIGHT = HEIGHT;
 
 /***/ }),
 /* 2 */
@@ -101,7 +103,7 @@ exports.renderer = renderer;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-var Colors = {
+var COLORS = {
 	red: 0xf25346,
 	white: 0xd8d0d1,
 	brown: 0x59332e,
@@ -110,11 +112,141 @@ var Colors = {
 	blue: 0x68c3c0
 };
 
-exports.Colors = Colors;
+exports.COLORS = COLORS;
 
 /***/ }),
-/* 3 */,
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.airplane = exports.createAirplane = undefined;
+
+var _three = __webpack_require__(0);
+
+var THREE = _interopRequireWildcard(_three);
+
+var _colors = __webpack_require__(2);
+
+var _scene = __webpack_require__(1);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+var AirPlane = function AirPlane() {
+
+	this.mesh = new THREE.Object3D();
+
+	// Create the cabin
+	var geomCockpit = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
+	var matCockpit = new THREE.MeshPhongMaterial({ color: _colors.COLORS.red, flatShading: THREE.FlatShading });
+	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
+	cockpit.castShadow = true;
+	cockpit.receiveShadow = true;
+	this.mesh.add(cockpit);
+
+	// Create the engine
+	var geomEngine = new THREE.BoxGeometry(20, 50, 50, 1, 1, 1);
+	var matEngine = new THREE.MeshPhongMaterial({ color: _colors.COLORS.white, flatShading: THREE.FlatShading });
+	var engine = new THREE.Mesh(geomEngine, matEngine);
+	engine.position.x = 40;
+	engine.castShadow = true;
+	engine.receiveShadow = true;
+	this.mesh.add(engine);
+
+	// Create the tail
+	var geomTailPlane = new THREE.BoxGeometry(15, 20, 5, 1, 1, 1);
+	var matTailPlane = new THREE.MeshPhongMaterial({ color: _colors.COLORS.red, flatShading: THREE.FlatShading });
+	var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
+	tailPlane.position.set(-35, 25, 0);
+	tailPlane.castShadow = true;
+	tailPlane.receiveShadow = true;
+	this.mesh.add(tailPlane);
+
+	// Create the wing
+	var geomSideWing = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
+	var matSideWing = new THREE.MeshPhongMaterial({ color: _colors.COLORS.red, flatShading: THREE.FlatShading });
+	var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
+	sideWing.castShadow = true;
+	sideWing.receiveShadow = true;
+	this.mesh.add(sideWing);
+
+	// propeller
+	var geomPropeller = new THREE.BoxGeometry(20, 10, 10, 1, 1, 1);
+	var matPropeller = new THREE.MeshPhongMaterial({ color: _colors.COLORS.brown, flatShading: THREE.FlatShading });
+	this.propeller = new THREE.Mesh(geomPropeller, matPropeller);
+	this.propeller.castShadow = true;
+	this.propeller.receiveShadow = true;
+
+	// blades
+	var geomBlade = new THREE.BoxGeometry(1, 100, 20, 1, 1, 1);
+	var matBlade = new THREE.MeshPhongMaterial({ color: _colors.COLORS.brownDark, flatShading: THREE.FlatShading });
+
+	var blade = new THREE.Mesh(geomBlade, matBlade);
+	blade.position.set(8, 0, 0);
+	blade.castShadow = true;
+	blade.receiveShadow = true;
+	this.propeller.add(blade);
+	this.propeller.position.set(50, 0, 0);
+	this.mesh.add(this.propeller);
+};
+
+var airplane = void 0;
+
+function createAirplane() {
+	exports.airplane = airplane = new AirPlane();
+	airplane.mesh.scale.set(.25, .25, .25);
+	airplane.mesh.position.y = 100;
+	_scene.scene.add(airplane.mesh);
+}
+
+exports.createAirplane = createAirplane;
+exports.airplane = airplane;
+
+/***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.mousePos = exports.initHandleMouseMove = undefined;
+
+var _scene = __webpack_require__(1);
+
+function initHandleMouseMove() {
+	document.addEventListener('mousemove', handleMouseMove, false);
+}
+
+var mousePos = { x: 0, y: 0 };
+
+// now handle the mousemove event
+function handleMouseMove(event) {
+	// here we are converting the mouse position value received 
+	// to a normalized value varying between -1 and 1;
+	// this is the formula for the horizontal axis:
+
+	var tx = -1 + event.clientX / _scene.WIDTH * 2;
+
+	// for the vertical axis, we need to inverse the formula 
+	// because the 2D y-axis goes the opposite direction of the 3D y-axis
+
+	var ty = 1 - event.clientY / _scene.HEIGHT * 2;
+	exports.mousePos = mousePos = { x: tx, y: ty };
+}
+
+exports.initHandleMouseMove = initHandleMouseMove;
+exports.mousePos = mousePos;
+
+/***/ }),
+/* 5 */,
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -122,13 +254,17 @@ exports.Colors = Colors;
 
 var _scene = __webpack_require__(1);
 
-var _lights = __webpack_require__(5);
+var _lights = __webpack_require__(7);
 
-var _airplane = __webpack_require__(6);
+var _airplane = __webpack_require__(3);
 
-var _sea = __webpack_require__(7);
+var _sea = __webpack_require__(8);
 
-var _sky = __webpack_require__(8);
+var _sky = __webpack_require__(9);
+
+var _handleMouseMove = __webpack_require__(4);
+
+var _airplaneControl = __webpack_require__(10);
 
 window.addEventListener('load', init, false);
 
@@ -144,6 +280,9 @@ function init() {
 	(0, _sea.createSea)();
 	(0, _sky.createSky)();
 
+	// add controls
+	(0, _handleMouseMove.initHandleMouseMove)();
+
 	// start a loop that will update the objects' positions 
 	// and render the scene on each frame
 	gameLoop();
@@ -151,9 +290,10 @@ function init() {
 
 function gameLoop() {
 	// Rotate the propeller, the sea and the sky
-	_airplane.airplane.propeller.rotation.x += 0.3;
-	_sea.sea.mesh.rotation.z += .005;
-	_sky.sky.mesh.rotation.z += .01;
+	_sea.sea.mesh.rotation.z += .005; // TODO : put to sea.updateSea()
+	_sky.sky.mesh.rotation.z += .01; // TODO: put to sky.updateSky()
+
+	(0, _airplaneControl.updatePlane)();
 
 	// render the scene
 	_scene.renderer.render(_scene.scene, _scene.camera);
@@ -163,7 +303,7 @@ function gameLoop() {
 }
 
 /***/ }),
-/* 5 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -219,99 +359,7 @@ function createLights() {
 exports.createLights = createLights;
 
 /***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.airplane = exports.createAirplane = undefined;
-
-var _three = __webpack_require__(0);
-
-var THREE = _interopRequireWildcard(_three);
-
-var _colors = __webpack_require__(2);
-
-var _scene = __webpack_require__(1);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-var AirPlane = function AirPlane() {
-
-	this.mesh = new THREE.Object3D();
-
-	// Create the cabin
-	var geomCockpit = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
-	var matCockpit = new THREE.MeshPhongMaterial({ color: _colors.Colors.red, shading: THREE.FlatShading });
-	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
-	cockpit.castShadow = true;
-	cockpit.receiveShadow = true;
-	this.mesh.add(cockpit);
-
-	// Create the engine
-	var geomEngine = new THREE.BoxGeometry(20, 50, 50, 1, 1, 1);
-	var matEngine = new THREE.MeshPhongMaterial({ color: _colors.Colors.white, shading: THREE.FlatShading });
-	var engine = new THREE.Mesh(geomEngine, matEngine);
-	engine.position.x = 40;
-	engine.castShadow = true;
-	engine.receiveShadow = true;
-	this.mesh.add(engine);
-
-	// Create the tail
-	var geomTailPlane = new THREE.BoxGeometry(15, 20, 5, 1, 1, 1);
-	var matTailPlane = new THREE.MeshPhongMaterial({ color: _colors.Colors.red, shading: THREE.FlatShading });
-	var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
-	tailPlane.position.set(-35, 25, 0);
-	tailPlane.castShadow = true;
-	tailPlane.receiveShadow = true;
-	this.mesh.add(tailPlane);
-
-	// Create the wing
-	var geomSideWing = new THREE.BoxGeometry(40, 8, 150, 1, 1, 1);
-	var matSideWing = new THREE.MeshPhongMaterial({ color: _colors.Colors.red, shading: THREE.FlatShading });
-	var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
-	sideWing.castShadow = true;
-	sideWing.receiveShadow = true;
-	this.mesh.add(sideWing);
-
-	// propeller
-	var geomPropeller = new THREE.BoxGeometry(20, 10, 10, 1, 1, 1);
-	var matPropeller = new THREE.MeshPhongMaterial({ color: _colors.Colors.brown, shading: THREE.FlatShading });
-	this.propeller = new THREE.Mesh(geomPropeller, matPropeller);
-	this.propeller.castShadow = true;
-	this.propeller.receiveShadow = true;
-
-	// blades
-	var geomBlade = new THREE.BoxGeometry(1, 100, 20, 1, 1, 1);
-	var matBlade = new THREE.MeshPhongMaterial({ color: _colors.Colors.brownDark, shading: THREE.FlatShading });
-
-	var blade = new THREE.Mesh(geomBlade, matBlade);
-	blade.position.set(8, 0, 0);
-	blade.castShadow = true;
-	blade.receiveShadow = true;
-	this.propeller.add(blade);
-	this.propeller.position.set(50, 0, 0);
-	this.mesh.add(this.propeller);
-};
-
-var airplane = void 0;
-
-function createAirplane() {
-	exports.airplane = airplane = new AirPlane();
-	airplane.mesh.scale.set(.25, .25, .25);
-	airplane.mesh.position.y = 100;
-	_scene.scene.add(airplane.mesh);
-}
-
-exports.createAirplane = createAirplane;
-exports.airplane = airplane;
-
-/***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -345,10 +393,10 @@ var Sea = function Sea() {
 
 	// create the material 
 	var mat = new THREE.MeshPhongMaterial({
-		color: _colors.Colors.blue,
+		color: _colors.COLORS.blue,
 		transparent: true,
 		opacity: .6,
-		shading: THREE.FlatShading
+		flatShading: THREE.FlatShading
 	});
 
 	// To create an object in Three.js, we have to create a mesh 
@@ -375,7 +423,7 @@ exports.createSea = createSea;
 exports.sea = sea;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -406,7 +454,7 @@ var Cloud = function Cloud() {
 
 	// create a material; a simple white material will do the trick
 	var mat = new THREE.MeshPhongMaterial({
-		color: _colors.Colors.white
+		color: _colors.COLORS.white
 	});
 
 	// duplicate the geometry a random number of times
@@ -493,5 +541,47 @@ function createSky() {
 exports.createSky = createSky;
 exports.sky = sky;
 
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.updatePlane = undefined;
+
+var _handleMouseMove = __webpack_require__(4);
+
+var _airplane = __webpack_require__(3);
+
+function updatePlane() {
+    // let's move the airplane between -100 and 100 on the horizontal axis, 
+    // and between 25 and 175 on the vertical axis,
+    // depending on the mouse position which ranges between -1 and 1 on both axes;
+    // to achieve that we use a normalize function (see below)
+    var targetX = normalize(_handleMouseMove.mousePos.x, -1, 1, -100, 100);
+    var targetY = normalize(_handleMouseMove.mousePos.y, -1, 1, 25, 175);
+
+    // update the airplane's position
+    _airplane.airplane.mesh.position.y = targetY;
+    _airplane.airplane.mesh.position.x = targetX;
+    _airplane.airplane.propeller.rotation.x += 0.3;
+}
+
+function normalize(v, vmin, vmax, tmin, tmax) {
+    var nv = Math.max(Math.min(v, vmax), vmin);
+    var dv = vmax - vmin;
+    var pc = (nv - vmin) / dv;
+    var dt = tmax - tmin;
+    var tv = tmin + pc * dt;
+
+    return tv;
+}
+
+exports.updatePlane = updatePlane;
+
 /***/ })
-],[4]);
+],[6]);
