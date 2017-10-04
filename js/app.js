@@ -3,6 +3,8 @@ import { createLights } from './scene/lights';
 import { createAirplane, airplane } from './models/airplane';
 import { createSea, sea } from './models/sea';
 import { createSky, sky } from './models/sky';
+import { initHandleMouseMove } from './controls/handleMouseMove';
+import { updatePlane } from './controls/airplaneControl';
 
 window.addEventListener('load', init, false);
 
@@ -18,6 +20,9 @@ function init () {
 	createSea();
 	createSky();
 
+	// add controls
+	initHandleMouseMove()
+
 	// start a loop that will update the objects' positions 
 	// and render the scene on each frame
 	gameLoop();
@@ -25,9 +30,10 @@ function init () {
 
 function gameLoop () {
 	// Rotate the propeller, the sea and the sky
-	airplane.propeller.rotation.x += 0.3;
-	sea.mesh.rotation.z += .005;
-	sky.mesh.rotation.z += .01;
+	sea.mesh.rotation.z += .005; // TODO : put to sea.updateSea()
+	sky.mesh.rotation.z += .01; // TODO: put to sky.updateSky()
+
+	updatePlane();
 
 	// render the scene
 	renderer.render(scene, camera);

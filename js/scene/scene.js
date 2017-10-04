@@ -70,4 +70,4 @@ function handleWindowResize() {
 	camera.updateProjectionMatrix();
 }
 
-export { createScene, scene, camera, renderer };
+export { createScene, scene, camera, renderer, WIDTH, HEIGHT };

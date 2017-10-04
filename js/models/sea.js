@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Colors } from '../colors';
+import { COLORS } from '../colors';
 import { scene } from '../scene/scene';
 
 // First let's define a Sea object :
@@ -15,10 +15,10 @@ const Sea = function () {
 	
 	// create the material 
 	let mat = new THREE.MeshPhongMaterial({
-		color:Colors.blue,
-		transparent:true,
-		opacity:.6,
-		shading:THREE.FlatShading,
+		color: COLORS.blue,
+		transparent: true,
+		opacity: .6,
+		flatShading: THREE.FlatShading,
 	});
 
 	// To create an object in Three.js, we have to create a mesh 

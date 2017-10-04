@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Colors } from '../colors';
+import { COLORS } from '../colors';
 import { scene } from '../scene/scene';
 
 const Cloud = function () {
@@ -12,7 +12,7 @@ const Cloud = function () {
 	
 	// create a material; a simple white material will do the trick
 	let mat = new THREE.MeshPhongMaterial({
-		color:Colors.white,  
+		color: COLORS.white,  
 	});
 	
 	// duplicate the geometry a random number of times
