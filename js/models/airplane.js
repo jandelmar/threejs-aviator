@@ -2,12 +2,23 @@ import * as THREE from 'three';
 import { COLORS } from '../colors';
 import { scene } from '../scene/scene';
 
+// TODO: convert to class
 const AirPlane = function () {
 	
 	this.mesh = new THREE.Object3D();
 	
 	// Create the cabin
 	let geomCockpit = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
+	// Cooler cockpit
+	geomCockpit.vertices[4].y-=10;
+	geomCockpit.vertices[4].z+=20;
+	geomCockpit.vertices[5].y-=10;
+	geomCockpit.vertices[5].z-=20;
+	geomCockpit.vertices[6].y+=30;
+	geomCockpit.vertices[6].z+=20;
+	geomCockpit.vertices[7].y+=30;
+	geomCockpit.vertices[7].z-=20;
+
 	let matCockpit = new THREE.MeshPhongMaterial({color: COLORS.red, flatShading: THREE.FlatShading});
 	let cockpit = new THREE.Mesh(geomCockpit, matCockpit);
 	cockpit.castShadow = true;

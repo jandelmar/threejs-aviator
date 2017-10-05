@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { COLORS } from '../colors';
 import { scene } from '../scene/scene';
 
-// First let's define a Sea object :
+// TODO: convert to class
 const Sea = function () {
 	
 	// create the geometry (shape) of the cylinder;

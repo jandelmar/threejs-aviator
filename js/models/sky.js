@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { COLORS } from '../colors';
 import { scene } from '../scene/scene';
 
+// TODO: convert to class
 const Cloud = function () {
 	// Create an empty container that will hold the different parts of the cloud
 	this.mesh = new THREE.Object3D();
