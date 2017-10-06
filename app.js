@@ -132,16 +132,29 @@ var THREE = _interopRequireWildcard(_three);
 
 var _colors = __webpack_require__(2);
 
+var _pilot = __webpack_require__(4);
+
 var _scene = __webpack_require__(1);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+// TODO: convert to class
 var AirPlane = function AirPlane() {
 
 	this.mesh = new THREE.Object3D();
 
 	// Create the cabin
 	var geomCockpit = new THREE.BoxGeometry(60, 50, 50, 1, 1, 1);
+	// Cooler cockpit
+	geomCockpit.vertices[4].y -= 10;
+	geomCockpit.vertices[4].z += 20;
+	geomCockpit.vertices[5].y -= 10;
+	geomCockpit.vertices[5].z -= 20;
+	geomCockpit.vertices[6].y += 30;
+	geomCockpit.vertices[6].z += 20;
+	geomCockpit.vertices[7].y += 30;
+	geomCockpit.vertices[7].z -= 20;
+
 	var matCockpit = new THREE.MeshPhongMaterial({ color: _colors.COLORS.red, flatShading: THREE.FlatShading });
 	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
 	cockpit.castShadow = true;
@@ -192,6 +205,11 @@ var AirPlane = function AirPlane() {
 	this.propeller.add(blade);
 	this.propeller.position.set(50, 0, 0);
 	this.mesh.add(this.propeller);
+
+	// pilot
+	this.pilot = (0, _pilot.createPilot)();
+	this.pilot.mesh.position.set(-10, 27, 0);
+	this.mesh.add(this.pilot.mesh);
 };
 
 var airplane = void 0;
@@ -200,6 +218,9 @@ function createAirplane() {
 	exports.airplane = airplane = new AirPlane();
 	airplane.mesh.scale.set(.25, .25, .25);
 	airplane.mesh.position.y = 100;
+
+	console.log('Create airplane:', airplane);
+
 	_scene.scene.add(airplane.mesh);
 }
 
@@ -208,6 +229,140 @@ exports.airplane = airplane;
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+			value: true
+});
+exports.createPilot = undefined;
+
+var _three = __webpack_require__(0);
+
+var THREE = _interopRequireWildcard(_three);
+
+var _colors = __webpack_require__(2);
+
+var _scene = __webpack_require__(1);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+// TODO: convert to class
+var Pilot = function Pilot() {
+			this.mesh = new THREE.Object3D();
+			this.mesh.name = "pilot";
+
+			// angleHairs is a property used to animate the hair later 
+			this.angleHairs = 0;
+
+			// Body of the pilot
+			var bodyGeom = new THREE.BoxGeometry(15, 15, 15);
+			var bodyMat = new THREE.MeshPhongMaterial({ color: _colors.COLORS.brown, flatShading: THREE.FlatShading });
+			var body = new THREE.Mesh(bodyGeom, bodyMat);
+			body.position.set(2, -12, 0);
+			this.mesh.add(body);
+
+			// Face of the pilot
+			var faceGeom = new THREE.BoxGeometry(10, 10, 10);
+			var faceMat = new THREE.MeshLambertMaterial({ color: _colors.COLORS.pink });
+			var face = new THREE.Mesh(faceGeom, faceMat);
+			this.mesh.add(face);
+
+			// Hair element
+			var hairGeom = new THREE.BoxGeometry(4, 4, 4);
+			var hairMat = new THREE.MeshLambertMaterial({ color: _colors.COLORS.brown });
+			var hair = new THREE.Mesh(hairGeom, hairMat);
+			// Align the shape of the hair to its bottom boundary, that will make it easier to scale.
+			hair.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0, 2, 0));
+
+			// create a container for the hair
+			var hairs = new THREE.Object3D();
+
+			// create a container for the hairs at the top 
+			// of the head (the ones that will be animated)
+			this.hairsTop = new THREE.Object3D();
+
+			// create the hairs at the top of the head 
+			// and position them on a 3 x 4 grid
+			for (var i = 0; i < 12; i++) {
+						var h = hair.clone();
+						var col = i % 3;
+						var row = Math.floor(i / 3);
+						var startPosZ = -4;
+						var startPosX = -4;
+						h.position.set(startPosX + row * 4, 0, startPosZ + col * 4);
+						this.hairsTop.add(h);
+			}
+			hairs.add(this.hairsTop);
+
+			// create the hairs at the side of the face
+			var hairSideGeom = new THREE.BoxGeometry(12, 4, 2);
+			hairSideGeom.applyMatrix(new THREE.Matrix4().makeTranslation(-6, 0, 0));
+			var hairSideR = new THREE.Mesh(hairSideGeom, hairMat);
+			var hairSideL = hairSideR.clone();
+			hairSideR.position.set(8, -2, 6);
+			hairSideL.position.set(8, -2, -6);
+			hairs.add(hairSideR);
+			hairs.add(hairSideL);
+
+			// create the hairs at the back of the head
+			var hairBackGeom = new THREE.BoxGeometry(2, 8, 10);
+			var hairBack = new THREE.Mesh(hairBackGeom, hairMat);
+			hairBack.position.set(-1, -4, 0);
+			hairs.add(hairBack);
+			hairs.position.set(-5, 5, 0);
+
+			this.mesh.add(hairs);
+
+			var glassGeom = new THREE.BoxGeometry(5, 5, 5);
+			var glassMat = new THREE.MeshLambertMaterial({ color: _colors.COLORS.blue });
+			var glassR = new THREE.Mesh(glassGeom, glassMat);
+			glassR.position.set(6, 0, 3);
+			var glassL = glassR.clone();
+			glassL.position.z = -glassR.position.z;
+
+			var glassAGeom = new THREE.BoxGeometry(11, 1, 11);
+			var glassA = new THREE.Mesh(glassAGeom, glassMat);
+			this.mesh.add(glassR);
+			this.mesh.add(glassL);
+			this.mesh.add(glassA);
+
+			var earGeom = new THREE.BoxGeometry(2, 3, 2);
+			var earL = new THREE.Mesh(earGeom, faceMat);
+			earL.position.set(0, 0, -6);
+			var earR = earL.clone();
+			earR.position.set(0, 0, 6);
+			this.mesh.add(earL);
+			this.mesh.add(earR);
+};
+
+// TODO: add to clas Pilot
+// move the hair
+Pilot.prototype.updateHairs = function () {
+			// get the hair
+			var hairs = this.hairsTop.children;
+
+			// update them according to the angle angleHairs
+			var l = hairs.length;
+			for (var i = 0; i < l; i++) {
+						var h = hairs[i];
+						// each hair element will scale on cyclical basis between 75% and 100% of its original size
+						h.scale.y = .75 + Math.cos(this.angleHairs + i / 3) * .25;
+			}
+			// increment the angle for the next frame
+			this.angleHairs += .16;
+};
+
+function createPilot() {
+			return new Pilot();
+}
+
+exports.createPilot = createPilot;
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -245,8 +400,8 @@ exports.initHandleMouseMove = initHandleMouseMove;
 exports.mousePos = mousePos;
 
 /***/ }),
-/* 5 */,
-/* 6 */
+/* 6 */,
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -254,17 +409,19 @@ exports.mousePos = mousePos;
 
 var _scene = __webpack_require__(1);
 
-var _lights = __webpack_require__(7);
+var _lights = __webpack_require__(8);
 
 var _airplane = __webpack_require__(3);
 
-var _sea = __webpack_require__(8);
+var _sea = __webpack_require__(9);
 
-var _sky = __webpack_require__(9);
+var _sky = __webpack_require__(10);
 
-var _handleMouseMove = __webpack_require__(4);
+var _pilot = __webpack_require__(4);
 
-var _airplaneControl = __webpack_require__(10);
+var _handleMouseMove = __webpack_require__(5);
+
+var _airplaneControl = __webpack_require__(11);
 
 window.addEventListener('load', init, false);
 
@@ -279,6 +436,7 @@ function init() {
 	(0, _airplane.createAirplane)();
 	(0, _sea.createSea)();
 	(0, _sky.createSky)();
+	(0, _pilot.createPilot)();
 
 	// add controls
 	(0, _handleMouseMove.initHandleMouseMove)();
@@ -303,7 +461,7 @@ function gameLoop() {
 }
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -359,7 +517,7 @@ function createLights() {
 exports.createLights = createLights;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -380,7 +538,7 @@ var _scene = __webpack_require__(1);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-// First let's define a Sea object :
+// TODO: convert to class
 var Sea = function Sea() {
 
 	// create the geometry (shape) of the cylinder;
@@ -423,7 +581,7 @@ exports.createSea = createSea;
 exports.sea = sea;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -444,6 +602,7 @@ var _scene = __webpack_require__(1);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
+// TODO: convert to class
 var Cloud = function Cloud() {
 	// Create an empty container that will hold the different parts of the cloud
 	this.mesh = new THREE.Object3D();
@@ -542,7 +701,7 @@ exports.createSky = createSky;
 exports.sky = sky;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -553,7 +712,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.updatePlane = undefined;
 
-var _handleMouseMove = __webpack_require__(4);
+var _handleMouseMove = __webpack_require__(5);
 
 var _airplane = __webpack_require__(3);
 
@@ -569,6 +728,8 @@ function updatePlane() {
     _airplane.airplane.mesh.position.y = targetY;
     _airplane.airplane.mesh.position.x = targetX;
     _airplane.airplane.propeller.rotation.x += 0.3;
+
+    _airplane.airplane.pilot.updateHairs();
 }
 
 function normalize(v, vmin, vmax, tmin, tmax) {
@@ -584,4 +745,4 @@ function normalize(v, vmin, vmax, tmin, tmax) {
 exports.updatePlane = updatePlane;
 
 /***/ })
-],[6]);
+],[7]);
