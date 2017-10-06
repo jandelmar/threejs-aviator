@@ -3,6 +3,7 @@ import { createLights } from './scene/lights';
 import { createAirplane, airplane } from './models/airplane';
 import { createSea, sea } from './models/sea';
 import { createSky, sky } from './models/sky';
+import { createPilot, pilot } from './models/pilot';
 import { initHandleMouseMove } from './controls/handleMouseMove';
 import { updatePlane } from './controls/airplaneControl';
 
@@ -19,6 +20,7 @@ function init () {
 	createAirplane();
 	createSea();
 	createSky();
+	createPilot();
 
 	// add controls
 	initHandleMouseMove()

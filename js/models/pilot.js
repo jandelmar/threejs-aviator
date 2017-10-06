@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { COLORS } from '../colors';
+import { scene } from '../scene/scene';
 
 // TODO: convert to class
 const Pilot = function () {
@@ -7,11 +8,11 @@ const Pilot = function () {
     this.mesh.name = "pilot";
     
     // angleHairs is a property used to animate the hair later 
-    this.angleHairs=0;
+    this.angleHairs = 0;
 
     // Body of the pilot
 	let bodyGeom = new THREE.BoxGeometry(15, 15, 15);
-	let bodyMat = new THREE.MeshPhongMaterial({color: COLORS.brown, shading: THREE.FlatShading});
+	let bodyMat = new THREE.MeshPhongMaterial({color: COLORS.brown, flatShading: THREE.FlatShading});
 	let body = new THREE.Mesh(bodyGeom, bodyMat);
 	body.position.set(2,-12,0);
     this.mesh.add(body);
@@ -92,7 +93,7 @@ const Pilot = function () {
 
 // TODO: add to clas Pilot
 // move the hair
-Pilot.prototype.updateHairs = function(){
+Pilot.prototype.updateHairs = function () {
 	// get the hair
 	let hairs = this.hairsTop.children;
 
@@ -104,5 +105,11 @@ Pilot.prototype.updateHairs = function(){
 		h.scale.y = .75 + Math.cos(this.angleHairs + i / 3) * .25;
 	}
 	// increment the angle for the next frame
-	this.angleHairs += 0.16;
+	this.angleHairs += .16;
 }
+
+function createPilot () {
+	return new Pilot()
+}
+
+export { createPilot };

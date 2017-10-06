@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { COLORS } from '../colors';
+import { createPilot } from './pilot'
 import { scene } from '../scene/scene';
 
 // TODO: convert to class
@@ -69,6 +70,11 @@ const AirPlane = function () {
 	this.propeller.add(blade);
 	this.propeller.position.set(50, 0, 0);
 	this.mesh.add(this.propeller);
+
+	// pilot
+	this.pilot = createPilot();
+	this.pilot.mesh.position.set(-10,27,0);
+	this.mesh.add(this.pilot.mesh)
 };
 
 let airplane;
@@ -77,6 +83,9 @@ function createAirplane () {
 	airplane = new AirPlane();
 	airplane.mesh.scale.set(.25, .25, .25);
 	airplane.mesh.position.y = 100;
+
+	console.log('Create airplane:', airplane);
+
 	scene.add(airplane.mesh);
 }
 
