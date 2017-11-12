@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { scene } from './scene';
 
 function createLights() {
+	// an ambient light modifies the global color of a scene and makes the shadows softer
+	let ambientLight = new THREE.AmbientLight(0xdc8874, .22);
+	
 	// A hemisphere light is a gradient colored light; 
 	// the first parameter is the sky color, the second parameter is the ground color, 
 	// the third parameter is the intensity of the light
@@ -33,6 +36,7 @@ function createLights() {
 	// to activate the lights, just add them to the scene
 	scene.add(hemisphereLight);  
 	scene.add(shadowLight);
+	scene.add(ambientLight);	
 }
 
 export { createLights }
