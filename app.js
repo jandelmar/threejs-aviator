@@ -447,10 +447,8 @@ function init() {
 }
 
 function gameLoop() {
-	// Rotate the propeller, the sea and the sky
-	_sea.sea.mesh.rotation.z += .005; // TODO : put to sea.updateSea()
-	_sky.sky.mesh.rotation.z += .01; // TODO: put to sky.updateSky()
-
+	(0, _sea.updateSea)();
+	(0, _sky.updateSky)();
 	(0, _airplaneControl.updatePlane)();
 
 	// render the scene
@@ -481,6 +479,9 @@ var _scene = __webpack_require__(1);
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
 function createLights() {
+	// an ambient light modifies the global color of a scene and makes the shadows softer
+	var ambientLight = new THREE.AmbientLight(0xdc8874, .22);
+
 	// A hemisphere light is a gradient colored light; 
 	// the first parameter is the sky color, the second parameter is the ground color, 
 	// the third parameter is the intensity of the light
@@ -512,6 +513,7 @@ function createLights() {
 	// to activate the lights, just add them to the scene
 	_scene.scene.add(hemisphereLight);
 	_scene.scene.add(shadowLight);
+	_scene.scene.add(ambientLight);
 }
 
 exports.createLights = createLights;
@@ -526,7 +528,7 @@ exports.createLights = createLights;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.sea = exports.createSea = undefined;
+exports.sea = exports.updateSea = exports.createSea = undefined;
 
 var _three = __webpack_require__(0);
 
@@ -549,11 +551,38 @@ var Sea = function Sea() {
 	// rotate the geometry on the x axis
 	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
 
+	// important: by merging vertices we ensure the continuity of the waves
+	geom.mergeVertices();
+
+	// get the vertices
+	var l = geom.vertices.length;
+
+	// create an array to store new data associated to each vertex
+	this.waves = [];
+
+	for (var i = 0; i < l; i++) {
+		// get each vertex
+		var v = geom.vertices[i];
+
+		// store some data associated to it
+		this.waves.push({
+			y: v.y,
+			x: v.x,
+			z: v.z,
+			// a random angle
+			ang: Math.random() * Math.PI * 2,
+			// a random distance
+			amp: 5 + Math.random() * 15,
+			// a random speed between 0.016 and 0.048 radians / frame
+			speed: 0.016 + Math.random() * 0.032
+		});
+	};
+
 	// create the material 
 	var mat = new THREE.MeshPhongMaterial({
 		color: _colors.COLORS.blue,
 		transparent: true,
-		opacity: .6,
+		opacity: .8,
 		flatShading: THREE.FlatShading
 	});
 
@@ -563,6 +592,38 @@ var Sea = function Sea() {
 
 	// Allow the sea to receive shadows
 	this.mesh.receiveShadow = true;
+};
+
+// now we create the function that will be called in each frame 
+// to update the position of the vertices to simulate the waves
+
+Sea.prototype.moveWaves = function () {
+
+	// get the vertices
+	var verts = this.mesh.geometry.vertices;
+	var l = verts.length;
+
+	for (var i = 0; i < l; i++) {
+		var v = verts[i];
+
+		// get the data associated to it
+		var vprops = this.waves[i];
+
+		// update the position of the vertex
+		v.x = vprops.x + Math.cos(vprops.ang) * vprops.amp;
+		v.y = vprops.y + Math.sin(vprops.ang) * vprops.amp;
+
+		// increment the angle for the next frame
+		vprops.ang += vprops.speed;
+	}
+
+	// Tell the renderer that the geometry of the sea has changed.
+	// In fact, in order to maintain the best level of performance, 
+	// three.js caches the geometries and ignores any changes
+	// unless we add this line
+	this.mesh.geometry.verticesNeedUpdate = true;
+
+	sea.mesh.rotation.z += .005;
 };
 
 var sea = void 0;
@@ -577,7 +638,13 @@ function createSea() {
 	_scene.scene.add(sea.mesh);
 }
 
+function updateSea() {
+	sea.mesh.rotation.z += .005;
+	sea.moveWaves();
+}
+
 exports.createSea = createSea;
+exports.updateSea = updateSea;
 exports.sea = sea;
 
 /***/ }),
@@ -590,7 +657,7 @@ exports.sea = sea;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.sky = exports.createSky = undefined;
+exports.sky = exports.updateSky = exports.createSky = undefined;
 
 var _three = __webpack_require__(0);
 
@@ -697,7 +764,12 @@ function createSky() {
 	_scene.scene.add(sky.mesh);
 }
 
+function updateSky() {
+	sky.mesh.rotation.z += .01;
+}
+
 exports.createSky = createSky;
+exports.updateSky = updateSky;
 exports.sky = sky;
 
 /***/ }),
@@ -724,9 +796,13 @@ function updatePlane() {
     var targetX = normalize(_handleMouseMove.mousePos.x, -1, 1, -100, 100);
     var targetY = normalize(_handleMouseMove.mousePos.y, -1, 1, 25, 175);
 
-    // update the airplane's position
-    _airplane.airplane.mesh.position.y = targetY;
-    _airplane.airplane.mesh.position.x = targetX;
+    // Move the plane at each frame by adding a fraction of the remaining distance
+    _airplane.airplane.mesh.position.y += (targetY - _airplane.airplane.mesh.position.y) * 0.1;
+
+    // Rotate the plane proportionally to the remaining distance
+    _airplane.airplane.mesh.rotation.z = (targetY - _airplane.airplane.mesh.position.y) * 0.0128;
+    _airplane.airplane.mesh.rotation.x = (_airplane.airplane.mesh.position.y - targetY) * 0.0064;
+
     _airplane.airplane.propeller.rotation.x += 0.3;
 
     _airplane.airplane.pilot.updateHairs();
