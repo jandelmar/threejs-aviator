@@ -97,4 +97,8 @@ function createSky () {
 	scene.add(sky.mesh);
 }
 
-export { createSky, sky };
+function updateSky () {
+	sky.mesh.rotation.z += .01;
+}
+
+export { createSky, updateSky, sky };
